@@ -28,26 +28,62 @@ const images =
         thumbnailHeight: 212
 }]
 
-function App() {
-  return (
-    <div className="container">
-      <div>
-        <h1 style={{float: "left", textAlign: "center"}}>Leaflet</h1>
-        <img src={logo} alt="logo" style={{display: "inline", float: "left", marginTop: "20", padding: "20"}} width="50" height="50"/>
-      </div>
-      <div style={{clear: "both"}}>
-        <p>Welcome to Leaflet, a site where you can upload and delete pictures of your houseplants!</p>
-        <div className="row">
-          <div className="col-sm-6">A picture</div>
-          <div className="col-sm-6">A picture</div>
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      images: [],
+      postRes: []
+    };
+
+    this.addNewImage = () => {
+      fetch(`/api/post`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "title": "plant"
+        }),
+      })
+      .then((response) => response.json())
+      .then((res) => this.setState({postRes: res}));
+    };
+  }
+  
+  componentDidMount() {
+    fetch(`/api/images`)
+    .then((response) => response.json())
+    .then(images => this.setState({
+      images: images
+    }));
+  }
+
+  render() {
+    return (
+      <div className="container">
+        <form>
+          <button onClick={() => this.addNewImage()}>Add a photo of a plant with title "Plant"</button>
+          {JSON.stringify(this.state.postRes)}
+        </form>
+        <div>
+          <h1 style={{float: "left", textAlign: "center"}}>Leaflet</h1>
+          <img src={logo} alt="logo" style={{display: "inline", float: "left", marginTop: "20", padding: "20"}} width="50" height="50"/>
         </div>
-        <Gallery images={images}/>
-        <svg width="1em" height="1em" viewBox="0 0 16 16" className="bi bi-heart-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
-        </svg>
+        <div style={{clear: "both"}}>
+          <p>Welcome to Leaflet, a site where you can upload and delete pictures of your houseplants!</p>
+          <div className="row">
+            <pre className="col-sm-6">{JSON.stringify(this.state.images, 2)}</pre>
+            <div className="col-sm-6">A picture</div>
+          </div>
+          <Gallery images={images}/>
+          <svg width="1em" height="1em" viewBox="0 0 16 16" className="bi bi-heart-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+          </svg>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default App;
