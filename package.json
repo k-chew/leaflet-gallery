@@ -22,7 +22,7 @@
     "client": "cd client && npm start",
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-    "build": "react-scripts build",
+    "build": "cd client && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
