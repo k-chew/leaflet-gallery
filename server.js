@@ -17,8 +17,24 @@ if (process.env.NODE_ENV === 'production') {
   app.get('*', function(req, res) {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
+  var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'client/build/images')
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+  });
 } else {
   app.use(express.static('client/public'));
+  var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'client/public/images')
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+  });
 }
 
 const port = process.env.PORT || 5000;
@@ -44,15 +60,6 @@ app.get('/api/images', (req, res) => {
       res.send(rows);
     }
   });
-});
-
-var storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-      cb(null, 'client/public/images')
-  },
-  filename: (req, file, cb) => {
-      cb(null, Date.now() + '-' + file.originalname)
-  }
 });
 
 // POST route
