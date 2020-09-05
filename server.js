@@ -45,6 +45,7 @@ app.listen(port, () => {
 // AWS RDS MySQL database info
 const table ='images';
 const pool = mysql.createPool({
+  connectionLimit: 100,
   host: 'leaflet-database.caccpytxj8mx.us-west-2.rds.amazonaws.com',
   user: 'leafletadmin',
   password: 'leafletadmin',
