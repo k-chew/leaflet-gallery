@@ -62,7 +62,7 @@ app.get('/api/images', (req, res) => {
   });
 });
 
-// POST route
+// add image POST route
 const upload = multer({storage});
 app.post('/api/post', upload.single('image'), (req, res) => {
   if (req.file) {
@@ -81,3 +81,22 @@ app.post('/api/post', upload.single('image'), (req, res) => {
     res.status("409").json("No Files to Upload.");
   }
 });
+
+/* delete image POST route
+app.post('/api/delete', upload.single('image'), (req, res) => {
+  if (req.file) {
+    // upload file data into MySQL database
+    var sql = `INSERT INTO ${table} (image_title, image_author, src) VALUES (?, ?, ?)`;
+    pool.query(sql, [req.file.filename, 'admin', '/images/'+ req.file.filename], (err, rows) => {
+      if (err) {
+        console.log("ERROR MESSAGE: ");
+        console.log(err);
+      } else {
+        console.log("SUCCESS RESPONSE: ");
+        console.log(res);
+      }
+    });
+  } else {
+    res.status("409").json("No Files to Upload.");
+  }
+});*/

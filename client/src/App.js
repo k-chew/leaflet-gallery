@@ -49,13 +49,21 @@ class App extends React.Component {
     });
   }
 
+  async deleteImage(id) {
+    await fetch(`api/delete`, {
+      method: 'POST',
+      body: id
+    });
+  }
+
   renderImages() {
     return this.state.images.map(img => {
-      const { src, caption, tags } = img;
+      const { image_id, src, caption, tags } = img;
       console.log(img);
       return (
         <div className="col-md-4">
           <div className="img-fluid img-thumbnail">
+            <button onClick={() => this.deleteImage(image_id)}>X</button>
             <img src={src} width="200" alt="Not Available" />
             <div>{caption}</div>
             <div>{tags}</div>
