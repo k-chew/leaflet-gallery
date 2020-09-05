@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'production') {
   // Serve any static files
   app.use(express.static(path.join(__dirname, 'client/build')));
   // Handle React routing, return all requests to React app
-  app.get('*', function(req, res) {
+  app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
   var storage = multer.diskStorage({
@@ -28,13 +28,13 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   app.use(express.static('client/public'));
   var storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'client/public/images')
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname)
-    }
-  });
+  destination: (req, file, cb) => {
+      cb(null, 'client/public/images')
+  },
+  filename: (req, file, cb) => {
+      cb(null, Date.now() + '-' + file.originalname)
+  }
+});
 }
 
 const port = process.env.PORT || 5000;
