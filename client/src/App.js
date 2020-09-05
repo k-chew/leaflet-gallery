@@ -9,6 +9,7 @@ class App extends React.Component {
       images: [], // unparsed GET request
       galleryImages: [], // parsed GET request
       selectedImg: null,
+      filter: ''
     };
 
     this.fileSelect = (event) => { // input submit handler
@@ -36,7 +37,7 @@ class App extends React.Component {
   }
   
   componentDidMount() {
-    this.fetchImages();
+    //this.fetchImages();
   }
 
   async fetchImages() {
@@ -52,10 +53,12 @@ class App extends React.Component {
       const { src, caption, tags } = img;
       console.log(img);
       return (
-        <div>
-          <img src={src} width="200" alt="Not Available" />
-          <div>{caption}</div>
-          <div>{tags}</div>
+        <div className="col-md-4">
+          <div className="img-fluid img-thumbnail">
+            <img src={src} width="200" alt="Not Available" />
+            <div>{caption}</div>
+            <div>{tags}</div>
+          </div>
         </div>
       )
     });
@@ -64,7 +67,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="container">
-        <div>
+        <div className="App-header">
           <h1 style={{float: "left", textAlign: "center"}}>Leaflet</h1>
           <img src={logo} alt="logo" style={{display: "inline", float: "left", marginTop: "20", padding: "20"}} width="50" height="50"/>
         </div>
