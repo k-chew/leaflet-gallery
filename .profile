@@ -1,1 +1,6 @@
-echo "hello world" >&2
+#!/bin/sh
+exec >&2
+echo "hello world"
+pwd
+ls -l
+printenv
