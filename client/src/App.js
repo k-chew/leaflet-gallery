@@ -43,6 +43,7 @@ class App extends React.Component {
   async fetchImages() {
     let res = await fetch(`api/images`);
     let resJson = await res.json();
+    console.log(resJson);
     this.setState({
       images: resJson
     });
@@ -73,7 +74,11 @@ class App extends React.Component {
         </div>
         <div style={{clear: "both"}}>
           <p>Welcome to Leaflet, a site where you can upload and delete pictures of your houseplants!</p>
-          {this.state.images ? <div>{this.renderImages()}</div> : null}
+          {this.state.images ? 
+          <div>
+            <pre>{JSON.stringify(this.state.images)}</pre>
+            <div>{this.renderImages()}</div>
+          </div> : null}
           <form>
             <label>
               Add an image!
