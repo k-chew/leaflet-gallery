@@ -1,5 +1,4 @@
 {
-  "homepage" : "https://leaflet-gallery.herokuapp.com/",
   "name": "leaflet-gallery",
   "version": "0.1.0",
   "private": true,
@@ -14,6 +13,7 @@
     "multer": "^1.4.2",
     "mysql": "^2.18.1",
     "parse-json": "^5.1.0",
+    "path": "^0.12.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-grid-gallery": "^0.5.5",
@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "heroku-postbuild": "concurrently --kill-others-on-fail \"npm start\" \"cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build\"",
+    "heroku-postbuild": "cd client && npm install && npm run build",
     "client": "cd client && npm start",
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""

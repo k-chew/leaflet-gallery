@@ -9,6 +9,7 @@ const app = express();
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(cors());
+app.use(express.static('client/public'));
 
 if (process.env.NODE_ENV === 'production') {
   // Serve any static files
