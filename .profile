@@ -2,5 +2,5 @@
 exec >&2
 echo "hello world"
 pwd
-ls -l
+ls -lR
 printenv
