@@ -37,7 +37,7 @@ class App extends React.Component {
   }
   
   componentDidMount() {
-    //this.fetchImages();
+    this.fetchImages();
   }
 
   async fetchImages() {
