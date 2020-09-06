@@ -43,17 +43,20 @@ class App extends React.Component {
   async fetchImages() {
     let res = await fetch(`api/images`);
     let resJson = await res.json();
-    console.log(resJson);
     this.setState({
       images: resJson
     });
   }
 
-  async deleteImage(id) {
+  async deleteImage(id, src) {
     await fetch(`api/delete`, {
       method: 'POST',
-      body: id
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({'id': id, 'path': src.split('/')[2]})
     });
+    this.fetchImages();
   }
 
   renderImages() {
@@ -61,9 +64,9 @@ class App extends React.Component {
       const { image_id, src, caption, tags } = img;
       console.log(img);
       return (
-        <div className="col-md-4">
+        <div className="col-md-3">
           <div className="img-fluid img-thumbnail">
-            <button onClick={() => this.deleteImage(image_id)}>X</button>
+            <button onClick={() => this.deleteImage(image_id, src)}>X</button>
             <img src={src} width="200" alt="Not Available" />
             <div>{caption}</div>
             <div>{tags}</div>
@@ -81,13 +84,10 @@ class App extends React.Component {
           <img src={logo} alt="logo" style={{display: "inline", float: "left", marginTop: "20", padding: "20"}} width="50" height="50"/>
         </div>
         <div style={{clear: "both"}}>
-          <p>Welcome to Leaflet, a site where you can upload and delete pictures of your houseplants!</p>
+          <p className="lead" style={{textAlign: "center"}}>Welcome to Leaflet, a site where you can upload and delete pictures of your houseplants!</p>
           {this.state.images ? 
-          <div>
-            <pre>{JSON.stringify(this.state.images)}</pre>
-            <div>{this.renderImages()}</div>
-          </div> : null}
-          <form>
+          <div>{this.renderImages()}</div> : null}
+          <form style={{clear: "both"}}>
             <label>
               Add an image!
               You can only add one.

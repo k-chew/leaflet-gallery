@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
@@ -11,25 +12,27 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(cors());
 
 if (process.env.NODE_ENV === 'production') {
+  imgLocation = 'client/build'; // global variable
   // Serve any static files
-  app.use(express.static(path.join(__dirname, 'client/build')));
+  app.use(express.static(path.join(__dirname, imgLocation)));
   // Handle React routing, return all requests to React app
   app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+    res.sendFile(path.join(__dirname, imgLocation, 'index.html'));
   });
   var storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'client/build/images')
+        cb(null, imgLocation + '/images')
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + '-' + file.originalname)
     }
   });
 } else {
-  app.use(express.static('client/public'));
+  imgLocation = 'client/public';
+  app.use(express.static(imgLocation));
   var storage = multer.diskStorage({
   destination: (req, file, cb) => {
-      cb(null, 'client/public/images')
+      cb(null, imgLocation + '/images')
   },
   filename: (req, file, cb) => {
       cb(null, Date.now() + '-' + file.originalname)
@@ -83,21 +86,26 @@ app.post('/api/post', upload.single('image'), (req, res) => {
   }
 });
 
-/* delete image POST route
-app.post('/api/delete', upload.single('image'), (req, res) => {
-  if (req.file) {
-    // upload file data into MySQL database
-    var sql = `INSERT INTO ${table} (image_title, image_author, src) VALUES (?, ?, ?)`;
-    pool.query(sql, [req.file.filename, 'admin', '/images/'+ req.file.filename], (err, rows) => {
-      if (err) {
-        console.log("ERROR MESSAGE: ");
-        console.log(err);
-      } else {
-        console.log("SUCCESS RESPONSE: ");
-        console.log(res);
-      }
-    });
-  } else {
-    res.status("409").json("No Files to Upload.");
-  }
-});*/
+// delete image POST route
+app.post('/api/delete', (req, res) => {
+  // upload file data into MySQL database
+  var sql = `delete from ${table} where image_id = ?`;
+  console.log(req.body.id);
+  console.log(req.body.path);
+  pool.query(sql, [req.body.id], (err, rows) => {
+    if (err) {
+      console.log("DEBUG: SQL delete entry error message");
+      console.log(err);
+    }
+  });
+  // remove file
+  fs.unlink(imgLocation + '/images/' + req.body.path, (err) => {
+    if (err) {
+      console.log("DEBUG: Unlink file error message");
+      console.error(err);
+      return;
+    } else {
+      console.log("DEBUG: Removed file");
+    }
+  })
+});
