@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === 'production') {
         cb(null, imgLocation + '/images')
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname)
+        cb(null, String(Date.now()).substring(0, 10) + '-' + file.originalname)
     }
   });
 } else {
