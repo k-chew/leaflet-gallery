@@ -70,7 +70,8 @@ app.get('/api/images', (req, res) => {
 const upload = multer({storage});
 app.post('/api/post', upload.single('image'), (req, res) => {
   if (req.file) {
-    console.log("DEBUG: /api/postdetails SUCCESS");
+    console.log(req.file.filename);
+    console.log("DEBUG: /api/post SUCCESS");
   } else {
     res.status("409").json("No Files to Upload.");
   }
