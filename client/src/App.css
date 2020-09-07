@@ -11,4 +11,68 @@
   font-size: calc(10px + 2vmin);
 }
 
+nav {
+  text-align: center;
+  padding: 20px;
+}
+
+.nav-element {
+  margin: 0px 50px;
+}
+
+.popup {
+  z-index: 99;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0,0,0, 0.5);
+}
+
+.popup_inner {
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  top: 25%;
+  bottom: 25%;
+  margin: auto;
+  background: white;
+}
+
+.img-toolbar {
+  position: relative;
+  top: 100%;
+  text-align: center;
+}
+
+.img-delete {
+  outline: none;
+  background: none;
+  border: none;
+  position: absolute;
+  right: 28%;
+}
+
+button {
+  outline: none;
+  background: rgb(222, 243, 234);
+  border: none;
+  box-shadow: inset;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 20px;
+  color: rgb(52, 73, 52);
+  text-transform: uppercase;
+}
+
+button:hover {
+  background: rgb(202, 230, 221);
+  color: rgb(120, 168, 120);
+  transition: all ease-in-out 500ms;
+}
+
 

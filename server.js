@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === 'production') {
       cb(null, imgLocation + '/images')
   },
   filename: (req, file, cb) => {
-      cb(null, Date.now() + '-' + file.originalname)
+      cb(null, String(Date.now()).substring(0, 10) + '-' + file.originalname)
   }
 });
 }
@@ -66,24 +66,29 @@ app.get('/api/images', (req, res) => {
   });
 });
 
-// add image POST route
+// add image (form data) POST route
 const upload = multer({storage});
 app.post('/api/post', upload.single('image'), (req, res) => {
   if (req.file) {
-    // upload file data into MySQL database
-    var sql = `INSERT INTO ${table} (image_title, image_author, src) VALUES (?, ?, ?)`;
-    pool.query(sql, [req.file.filename, 'admin', '/images/'+ req.file.filename], (err, rows) => {
-      if (err) {
-        console.log("ERROR MESSAGE: ");
-        console.log(err);
-      } else {
-        console.log("SUCCESS RESPONSE: ");
-        console.log(res);
-      }
-    });
+    console.log("DEBUG: /api/postdetails SUCCESS");
   } else {
     res.status("409").json("No Files to Upload.");
   }
+});
+
+// add image details (JSON) POST route
+app.post('/api/postdetails', (req, res) => {
+  // upload file data into MySQL database
+  var sql = `INSERT INTO ${table} (image_title, image_author, src, name, tags) VALUES (?, ?, ?, ?, ?)`;
+  let filename = String(Date.now()).substring(0, 10) + '-' + req.body.filename;
+  pool.query(sql, [filename, 'admin', '/images/'+ filename, req.body.name, JSON.stringify(req.body.tags)], (err, rows) => {
+    if (err) {
+      console.log("DEBUG: /api/postdetails ERROR MESSAGE: ");
+      console.log(err);
+    } else {
+      console.log("DEBUG: /api/postdetails SUCCESS");
+    }
+  });
 });
 
 // delete image POST route
