@@ -72,6 +72,15 @@ class App extends React.Component {
         tag: ''
       });
     };
+
+    this.removeTag = (index) => {
+      let tags = this.state.currentTags;
+      tags.splice(index, 1);
+      console.log(tags);
+      this.setState({
+        currentTags: tags
+      });
+    };
   }
   
   componentDidMount() {
@@ -165,7 +174,7 @@ class App extends React.Component {
           {tag}
           <img 
             className="no-style-btn hover-point" 
-            onClick={() => this.setState({currentTags: this.state.currentTags.splice(index, 1)})}
+            onClick={() => this.removeTag(index)}
             src={x} alt="X" width="10" height="10" style={{marginLeft: "5px"}} />
         </div>
       )
@@ -257,8 +266,8 @@ class App extends React.Component {
                   type='text' 
                   value={this.state.tag} 
                   onChange={(e) => this.setState({tag: e.target.value})} />
-                  {this.state.tag && this.state.tag.length <= 30 ? <button className="orange-btn" onClick={this.addTag}>Add note</button> 
-                  : <button disabled className="disabled-btn" onClick={this.addTag}>Add note</button>}
+                  {this.state.tag && this.state.tag.length <= 30 ? <button className="orange-btn" onClick={this.addTag}>Add tag</button> 
+                  : <button disabled className="disabled-btn" onClick={this.addTag}>Add tag</button>}
                   {this.state.tag.length > 30 ? <p style={{color: "red", position: "absolute"}}>Sorry, tags must be 30 characters or fewer!</p>: null}
                 </label>
                 <div style={{textAlign: "left", width: "80%", margin: "0 auto", overflowX: "break"}}>
