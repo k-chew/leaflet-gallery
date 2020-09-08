@@ -1,9 +1,28 @@
+@font-face {
+  font-family: 'Berkshire';
+  src: url('./fonts/BerkshireSwash-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./fonts/Montserrat-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Mali';
+  src: url('./fonts/Mali-SemiBold.ttf');
+}
+
+* {
+  font-family: 'Montserrat';
+}
+
 .App {
   text-align: center;
 }
 
 .App-header {
-  padding: 20px;
+  padding: 20px 0px 0px 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,26 +54,46 @@ nav {
 
 .popup_inner {
   position: absolute;
+  border-radius: 25px;
   left: 25%;
   right: 25%;
   top: 25%;
   bottom: 25%;
   margin: auto;
   background: white;
+  height: min-content;
 }
 
-.img-toolbar {
-  position: relative;
-  top: 100%;
+.plant {
+  background: rgb(239, 241, 240);
+  border-radius: 20px;
+  border: 2px solid rgb(222, 243, 234);
+  box-shadow: 5px 5px 5px rgb(163, 180, 173);
+  padding: 5px 0px;
+  margin: 15px;
+}
+
+.nametag {
+  margin: 0 auto;
+  margin-bottom: 10px;
+  background: rgb(251, 253, 250);
+  padding: 5px 15px;
+  width: min-content;
+  font-family: "Mali";
+  border-radius: 5px;
+  font-size: 20px;
   text-align: center;
+  border: 6px groove rgb(148, 175, 162);
 }
 
-.img-delete {
-  outline: none;
-  background: none;
-  border: none;
-  position: absolute;
-  right: 28%;
+.tags {
+  background: white;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  width: min-content;
+  padding: 10px;
+  margin: 10px;
+  border-left: 7px solid rgb(84, 107, 96);
 }
 
 button {
@@ -62,17 +101,109 @@ button {
   background: rgb(222, 243, 234);
   border: none;
   box-shadow: inset;
-  padding: 10px;
+  padding: 10px 20px;
   margin: 10px;
   border-radius: 20px;
   color: rgb(52, 73, 52);
-  text-transform: uppercase;
 }
 
 button:hover {
-  background: rgb(202, 230, 221);
+  background: rgb(240, 247, 243);
   color: rgb(120, 168, 120);
-  transition: all ease-in-out 500ms;
+  transition: all ease-in-out 250ms;
+}
+
+.search-bar {
+  width: max-content;
+  min-width: 245px;
+  outline: none;
+  border-radius: 20px;
+  border: none;
+  margin: 10px;
+  padding: 10px 20px;
+  background: rgb(222, 243, 234);
+}
+
+::placeholder {
+  color: rgb(52, 73, 52);
+}
+
+.search-bar:hover {
+  background: rgb(240, 247, 243);
+}
+
+label {
+  align-content: center;
+  text-align: left;
+  margin: 0 auto;
+  width: 80%;
+  padding: 20px;
+}
+
+form {
+  height: max-content;
+  padding: 10px;
+}
+
+.nav {
+  width: 50%;
+  position: relative;
+  top: 0;
+}
+
+.nav > button {
+  display: inline-block;
+}
+
+.orange-btn {
+  background: rgb(253, 244, 219);
+  border-radius: 5px;
+  color: rgb(129, 81, 42);
+  padding: 10px;
+  width: max-content;
+}
+
+.orange-btn:hover {
+  background: rgb(241, 237, 232);
+  color: rgb(129, 81, 42);
+}
+
+.disabled-btn {
+  background: rgb(241, 237, 232);
+  border-radius: 5px;
+  color: rgb(129, 81, 42);
+  padding: 10px;
+  width: max-content;
+}
+
+.disabled-btn:hover {
+  background: rgb(241, 237, 232);
+  border-radius: 5px;
+  color: rgb(129, 81, 42);
+  padding: 10px;
+  width: max-content;
+}
+
+.no-style-btn {
+  background: none;
+  padding: 0;
+  margin: 0;
+  color: black;
+  border: none;
+  outline: none;
+}
+
+.no-style-btn:hover {
+  background: none;
+  padding: 0;
+  margin: 0;
+  color: black;
+  border: none;
+  outline: none;
+}
+
+.hover-point:hover {
+  cursor: pointer;
 }
 
 

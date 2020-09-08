@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
-import logo from './logo.svg';
+import logo from './images/logo.svg';
+import x from './images/cross.svg';
 
 class App extends React.Component {
   constructor(props) {
@@ -17,6 +18,8 @@ class App extends React.Component {
       toDeleteSrc: null,
       tag: '',
       currentTags: [],
+      uploadFromDevice: true,
+      uploadFromURL: false,
     };
 
     this.fileSelect = (event) => { // input submit handler
@@ -110,17 +113,25 @@ class App extends React.Component {
   }
 
   renderImages() {
-    return this.state.images.map(img => {
-      const { image_id, src, caption, tags, name } = img;
+    let filtered = this.state.images;
+    if (this.state.filter.length) {
+      filtered = this.state.images.filter(img => img.name.toLowerCase().includes(this.state.filter.toLowerCase()) || img.tags.toLowerCase().includes(this.state.filter.toLowerCase()));
+    }
+    if (!filtered.length) {
+      return <div>Sorry, we couldn't find the plant you're looking for.</div>
+    }
+    return filtered.map(img => {
+      const { image_id, src, tags, name } = img;
       return (
-        <div key={image_id} className="col-md-3">
-          <img src={src} width="200" alt="Not Available" />
-          <div className="img-toolbar">
-            <div>{caption}</div>
-            <div>{tags.startsWith("[") ? String(tags.split(",")).split("\"") : tags}</div>
-            <div>{name}</div>
-            <button className="img-delete" onClick={() => this.toggleDeleteConfirmation(image_id, src)}>X</button>
-          </div>
+        <div key={image_id} className="col-md-3 plant">
+          <img 
+              className="hover-point" 
+              style={{position: "relative", left: "85%", top: "20px"}} 
+              onClick={() => this.toggleDeleteConfirmation(image_id, src)}
+              src={x} alt="X" width="20" height="20"/>
+          <div className="nametag">{name}</div>
+          <img src={src} style={{display: "block", margin: "auto"}} width="200" alt="Not Available" />
+          <div className="tags">{tags}</div>
         </div>
       )
     });
@@ -129,16 +140,13 @@ class App extends React.Component {
   renderTags() {
     return this.state.currentTags.map((tag, index) => {
       return (
-        <li key={index + tag.substring(0, 5)}>
+        <div className="orange-btn" style={{display: "inline"}} key={index + tag.substring(0, 5)}>
           {tag}
-          <button onClick={() => {
-            let tags = this.state.currentTags.splice(index, 1); // remove tag from array at index
-            console.log(tags);
-            this.setState({
-              currentTags: tags
-            });
-          }}>Delete note</button>
-        </li>
+          <img 
+            className="no-style-btn hover-point" 
+            onClick={() => this.setState({currentTags: this.state.currentTags.splice(index, 1)})}
+            src={x} alt="X" width="20" height="20"/>
+        </div>
       )
     });
   }
@@ -147,53 +155,62 @@ class App extends React.Component {
     return (
       <div className="container">
         <div className="App-header">
-          <h1 style={{float: "left", textAlign: "center"}}>Leaflet</h1>
+          <h1 style={{float: "left", textAlign: "center", fontFamily: "Berkshire", fontSize: "45px"}}>Leaflet</h1>
           <img src={logo} alt="logo" style={{display: "inline", float: "left", marginTop: "20", padding: "20"}} width="50" height="50"/>
+          <p className="lead" style={{margin: "15px", textAlign: "center"}}>Welcome to Leaflet, a site where you can upload and delete pictures of your houseplants!</p>
         </div>
         <div style={{clear: "both"}}>
           {this.state.showDeleteConfirmation ?
           <div>
             <div className="popup">
               <div className="popup_inner">
-                <p>Are you sure you want to delete?</p>
-                <button onClick={this.toggleDeleteConfirmation.bind(this)}>No, take me back!</button>
-                <button onClick={() => this.deleteImage(this.state.toDeleteId, this.state.toDeleteSrc)}>Yes, delete this plant!</button>
+                <div style={{margin: "20px auto", textAlign: "center"}}>
+                  <p className="lead">Are you sure you want to delete?</p>
+                  <button onClick={this.toggleDeleteConfirmation.bind(this)}>No, take me back!</button>
+                  <button onClick={() => this.deleteImage(this.state.toDeleteId, this.state.toDeleteSrc)}>Yes, delete this plant!</button>
+                </div>
               </div>
             </div>
           </div>
           : null}
-          <p className="lead" style={{textAlign: "center"}}>Welcome to Leaflet, a site where you can upload and delete pictures of your houseplants!</p>
           <nav>
             {this.state.popup ? 
             <div className="popup nav-element">
               <form className="popup_inner">
-                <ul>
-                  <li>Upload from device</li>
-                  <li>Upload from URL</li>
-                </ul>
-                <button onClick={() => {this.setState({popup: false})}}>X</button>
+                <img 
+                  className="hover-point" 
+                  style={{position: "absolute", top: "25px", right: "25px"}} 
+                  onClick={() => {this.setState({popup: false})}} 
+                  src={x} alt="X" width="20" height="20"/>
+                <div className="nav">
+                  <button onClick={() => this.setState({uploadFromDevice: true, uploadFromURL: false})}>Upload from device</button>
+                  <button onClick={() => this.setState({uploadFromURL: true, uploadFromDevice: false})}>Upload from URL</button>
+                </div>
                 <label>
+                  <p className="h4">Upload a photo of your plant!</p>
                   <input
                   type='file'
                   onChange={this.fileSelect}
                   />
                 </label>
                 <label>
-                  Name your plant!
+                  <p className="h4">Name your plant!</p>
                   <input 
                   type='text' 
                   value={this.state.imageName} 
                   onChange={(e) => this.setState({imageName: e.target.value})}/>
                 </label>
                 <label>
-                  Any notes? (plant type, characteristics)
+                  <p className="h4">Any tags you'd like to add?</p>
+                  <p className="h5">(e.g. Latin name, defining characteristics)</p>
                   <input 
                   type='text' 
                   value={this.state.tag} 
                   onChange={(e) => {
                     console.log(e.target.value);
                     this.setState({tag: e.target.value});}}/>
-                  {this.state.tag ? <button onClick={this.addTag}>Add note</button> : <button disabled onClick={this.addTag}>Add note</button>}
+                  {this.state.tag ? <button className="orange-btn" onClick={this.addTag}>Add note</button> 
+                  : <button disabled className="disabled-btn" onClick={this.addTag}>Add note</button>}
                 </label>
                 <ul>
                   {this.renderTags()}
@@ -201,13 +218,14 @@ class App extends React.Component {
                 <button onClick={this.fileUpload}>Add this plant to Leaflet!</button>
               </form>
             </div>
-            : <button onClick={() => {this.setState({popup: true})}}>Add an image!</button>}
+            : <button onClick={() => {this.setState({popup: true})}}>Add your plant to Leaflet!</button>}
             <input 
-            className="nav-element" 
-            style={{width: "210px"}} 
+            className="nav-element search-bar" 
+            value={this.state.filter}
             type='text' 
-            placeholder='Search plants by name or type'
+            placeholder='Search plants by name or tag'
             onChange={(e) => {this.setState({filter: e.target.value})}} />
+            {this.state.filter.length ? <button style={{position: "absolute", background: "none"}} onClick={() => this.setState({filter: ''})}>X</button> : null}
           </nav>
           {this.state.images ? 
           <div>{this.renderImages()}</div> : null}
