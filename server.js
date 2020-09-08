@@ -82,14 +82,25 @@ app.post('/api/postdetails', (req, res) => {
   // upload file data into MySQL database
   var sql = `INSERT INTO ${table} (image_title, image_author, src, name, tags) VALUES (?, ?, ?, ?, ?)`;
   let filename = String(Date.now()).substring(0, 10) + '-' + req.body.filename;
-  pool.query(sql, [filename, 'admin', '/images/'+ filename, req.body.name, JSON.stringify(req.body.tags)], (err, rows) => {
-    if (err) {
-      console.log("DEBUG: /api/postdetails ERROR MESSAGE: ");
-      console.log(err);
-    } else {
-      console.log("DEBUG: /api/postdetails SUCCESS");
-    }
-  });
+  if (req.body.url) {
+    pool.query(sql, [filename, 'admin', req.body.url, req.body.name, JSON.stringify(req.body.tags)], (err, rows) => {
+      if (err) {
+        console.log("DEBUG: /api/postdetails ERROR MESSAGE: ");
+        console.log(err);
+      } else {
+        console.log("DEBUG: /api/postdetails SUCCESS");
+      }
+    });
+  } else {
+    pool.query(sql, [filename, 'admin', '/images/'+ filename, req.body.name, JSON.stringify(req.body.tags)], (err, rows) => {
+      if (err) {
+        console.log("DEBUG: /api/postdetails ERROR MESSAGE: ");
+        console.log(err);
+      } else {
+        console.log("DEBUG: /api/postdetails SUCCESS");
+      }
+    });
+  }
 });
 
 // delete image POST route

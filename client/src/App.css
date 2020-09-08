@@ -70,6 +70,7 @@ nav {
   border: 2px solid rgb(222, 243, 234);
   box-shadow: 5px 5px 5px rgb(163, 180, 173);
   padding: 5px 0px;
+  padding-bottom: 20px;
   margin: 15px;
 }
 
@@ -86,14 +87,16 @@ nav {
   border: 6px groove rgb(148, 175, 162);
 }
 
-.tags {
+.tag {
   background: white;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   width: min-content;
   padding: 10px;
-  margin: 10px;
-  border-left: 7px solid rgb(84, 107, 96);
+  border-left: 7px solid rgb(163, 180, 173);
+  margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 button {
@@ -146,13 +149,20 @@ form {
 }
 
 .nav {
-  width: 50%;
+  width: 80%;
+  margin: 0 auto;
   position: relative;
   top: 0;
 }
 
-.nav > button {
+.nav > div {
   display: inline-block;
+  padding: 20px;
+  margin: 0 20px;
+}
+
+.nav > .selected {
+  border-top: 5px solid rgb(84, 107, 96);
 }
 
 .orange-btn {

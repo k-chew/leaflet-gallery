@@ -19,7 +19,8 @@ class App extends React.Component {
       tag: '',
       currentTags: [],
       uploadFromDevice: true,
-      uploadFromURL: false,
+      url: '',
+      reload: false,
     };
 
     this.fileSelect = (event) => { // input submit handler
@@ -47,19 +48,19 @@ class App extends React.Component {
     };
 
     this.deleteImage = async(id, src) => {
-      await fetch(`api/delete`, {
+      this.setState({
+        showDeleteConfirmation: !this.state.showDeleteConfirmation,
+        reload: true,
+        toDeleteId: null,
+        toDeleteSrc: null
+      });
+      await fetch('api/delete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json', // make sure you have this
         },
         body: JSON.stringify({'id': id, 'path': src.split('/')[2]}) // make sure key is a string
       });
-      this.setState({
-        showDeleteConfirmation: !this.state.showDeleteConfirmation,
-        toDeleteId: null,
-        toDeleteSrc: null
-      });
-      this.fetchImages();
     };
 
     this.addTag = () => {
@@ -77,6 +78,15 @@ class App extends React.Component {
     this.fetchImages();
   }
 
+  componentDidUpdate() {
+    if (this.state.reload) {
+      this.fetchImages();
+      this.setState({
+        reload: false
+      })
+    }
+  }
+
   async fetchImages() {
     let res = await fetch(`api/images`);
     let resJson = await res.json();
@@ -86,13 +96,23 @@ class App extends React.Component {
   }
 
   async postImageDetails() {
-    await fetch('api/postdetails', { // post image details in JSON
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json', // make sure you have this
-      },
-      body: JSON.stringify({ 'filename': this.state.selectedImg.name, 'name': this.state.imageName, 'tags': this.state.currentTags })
-    });
+    if (this.state.uploadFromDevice) {
+      await fetch('api/postdetails', { // post image details in JSON
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // make sure you have this
+        },
+        body: JSON.stringify({ 'filename': this.state.selectedImg.name, 'name': this.state.imageName, 'tags': this.state.currentTags })
+      });
+    } else {
+      await fetch('api/postdetails', { // post image details in JSON
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // make sure you have this
+        },
+        body: JSON.stringify({ 'url': this.state.url, 'filename': this.state.url.substr(this.state.url.lastIndexOf("/") + 1), 'name': this.state.imageName, 'tags': this.state.currentTags })
+      });
+    }
   }
 
   toggleDeleteConfirmation(image_id, src) {
@@ -112,16 +132,17 @@ class App extends React.Component {
     });
   }
 
-  renderImages() {
+  renderPlants() {
     let filtered = this.state.images;
     if (this.state.filter.length) {
       filtered = this.state.images.filter(img => img.name.toLowerCase().includes(this.state.filter.toLowerCase()) || img.tags.toLowerCase().includes(this.state.filter.toLowerCase()));
     }
     if (!filtered.length) {
-      return <div>Sorry, we couldn't find the plant you're looking for.</div>
+      return <h4 style={{textAlign: "center"}}>Sorry, we couldn't find the plant you're looking for.</h4>
     }
-    return filtered.map(img => {
+    return filtered.map((img, index) => {
       const { image_id, src, tags, name } = img;
+      let parsedTags = tags.split('"');
       return (
         <div key={image_id} className="col-md-3 plant">
           <img 
@@ -131,7 +152,7 @@ class App extends React.Component {
               src={x} alt="X" width="20" height="20"/>
           <div className="nametag">{name}</div>
           <img src={src} style={{display: "block", margin: "auto"}} width="200" alt="Not Available" />
-          <div className="tags">{tags}</div>
+          {tags.length > 2 ? <div>{this.renderParsedTags(parsedTags)}</div> : null}
         </div>
       )
     });
@@ -140,14 +161,24 @@ class App extends React.Component {
   renderTags() {
     return this.state.currentTags.map((tag, index) => {
       return (
-        <div className="orange-btn" style={{display: "inline"}} key={index + tag.substring(0, 5)}>
+        <div className="orange-btn" style={{display: "inline-block", margin: "10px", overflowWrap: "break-word"}} key={index + tag.substring(0, 5)}>
           {tag}
           <img 
             className="no-style-btn hover-point" 
             onClick={() => this.setState({currentTags: this.state.currentTags.splice(index, 1)})}
-            src={x} alt="X" width="20" height="20"/>
+            src={x} alt="X" width="10" height="10" style={{marginLeft: "5px"}} />
         </div>
       )
+    });
+  }
+
+  renderParsedTags(tags) {
+    return tags.map(tag => {
+      if (tag !== '[' && tag !== ',' && tag !== ']') {
+        return (<div className="tag">{tag}</div>);
+      } else {
+        return null;
+      }
     });
   }
 
@@ -183,9 +214,22 @@ class App extends React.Component {
                   onClick={() => {this.setState({popup: false})}} 
                   src={x} alt="X" width="20" height="20"/>
                 <div className="nav">
-                  <button onClick={() => this.setState({uploadFromDevice: true, uploadFromURL: false})}>Upload from device</button>
-                  <button onClick={() => this.setState({uploadFromURL: true, uploadFromDevice: false})}>Upload from URL</button>
+                  <div id="upload-from-device" className="hover-point selected" onClick={() => {
+                    this.setState({uploadFromDevice: true});
+                    document.getElementById("upload-from-device").classList.add("selected");
+                    document.getElementById("upload-from-url").classList.remove("selected");
+                  }}>
+                    Upload from device
+                  </div>
+                  <div id="upload-from-url" className="hover-point" onClick={() => {
+                    this.setState({uploadFromDevice: false});
+                    document.getElementById("upload-from-url").classList.add("selected");
+                    document.getElementById("upload-from-device").classList.remove("selected");
+                  }}>
+                    Upload from URL
+                  </div>
                 </div>
+                {this.state.uploadFromDevice ?
                 <label>
                   <p className="h4">Upload a photo of your plant!</p>
                   <input
@@ -193,6 +237,12 @@ class App extends React.Component {
                   onChange={this.fileSelect}
                   />
                 </label>
+                : <label>
+                    <p className="h4">Enter a valid URL</p>
+                    <input type='text' style={{width: "200px"}} value={this.state.url} onChange={(e) => this.setState({url: e.target.value})} />
+                </label> }
+                {!this.state.uploadFromDevice && this.state.url.length && this.state.url.match(/\.(jpeg|jpg|gif|png)$/) == null ? 
+                <div style={{color: "red", position: "absolute", width: "80%", margin: "0 70px", textAlign: "left"}}>Sorry, image needs to be JPEG, JPG, GIF, or PNG!</div>: null}
                 <label>
                   <p className="h4">Name your plant!</p>
                   <input 
@@ -200,21 +250,20 @@ class App extends React.Component {
                   value={this.state.imageName} 
                   onChange={(e) => this.setState({imageName: e.target.value})}/>
                 </label>
-                <label>
+                <label style={{padding: "20px 20px 0px 20px"}}>
                   <p className="h4">Any tags you'd like to add?</p>
                   <p className="h5">(e.g. Latin name, defining characteristics)</p>
                   <input 
                   type='text' 
                   value={this.state.tag} 
-                  onChange={(e) => {
-                    console.log(e.target.value);
-                    this.setState({tag: e.target.value});}}/>
-                  {this.state.tag ? <button className="orange-btn" onClick={this.addTag}>Add note</button> 
+                  onChange={(e) => this.setState({tag: e.target.value})} />
+                  {this.state.tag && this.state.tag.length <= 30 ? <button className="orange-btn" onClick={this.addTag}>Add note</button> 
                   : <button disabled className="disabled-btn" onClick={this.addTag}>Add note</button>}
+                  {this.state.tag.length > 30 ? <p style={{color: "red", position: "absolute"}}>Sorry, tags must be 30 characters or fewer!</p>: null}
                 </label>
-                <ul>
+                <div style={{textAlign: "left", width: "80%", margin: "0 auto", overflowX: "break"}}>
                   {this.renderTags()}
-                </ul>
+                </div>
                 <button onClick={this.fileUpload}>Add this plant to Leaflet!</button>
               </form>
             </div>
@@ -225,10 +274,16 @@ class App extends React.Component {
             type='text' 
             placeholder='Search plants by name or tag'
             onChange={(e) => {this.setState({filter: e.target.value})}} />
-            {this.state.filter.length ? <button style={{position: "absolute", background: "none"}} onClick={() => this.setState({filter: ''})}>X</button> : null}
+            {this.state.filter.length ? 
+            <img 
+            className="hover-point" 
+            style={{position: "relative", right: "3vw"}} 
+            onClick={() => this.setState({filter: ''})}
+            src={x} alt="X" width="10" height="10"/> 
+            : null}
           </nav>
           {this.state.images ? 
-          <div>{this.renderImages()}</div> : null}
+          <div>{this.renderPlants()}</div> : null}
         </div>
       </div>
     );
