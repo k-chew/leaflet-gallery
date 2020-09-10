@@ -30,6 +30,17 @@ npm i path
 npm i cors
 ```
 
+## Project Status
+### Known Bugs
+* deleting plant sometimes needs refresh to reflect changes
+* alignment of image gallery is not responsive, leaves gaps depending on image dimensions
+
+### Future Features
+* batch uploading and deleting of plants
+* log of entries for each plant to keep track of growth
+* care-related tags (hydration, sunlight)
+* user management system to have user-specific Leaflets
+
 ## Author
 
 [@k-chew](https://github.com/k-chew)
